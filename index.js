@@ -1,21 +1,55 @@
 'use strict';
-var gutil = require('gulp-util');
-var through = require('through2');
-var chalk = require('chalk');
-var prettyBytes = require('pretty-bytes');
-var gzipSize = require('gzip-size');
+var gutil = require('gulp-util'),
+	through = require('through2'),
+	chalk = require('chalk'),
+	prettyBytes = require('pretty-bytes');
 
-function log(title, what, size, gzip) {
-	title = title ? ('\'' + chalk.cyan(title) + '\' ') : '';
-	gutil.log(title + what + ' ' + chalk.magenta(prettyBytes(size)) +
-		(gzip ? chalk.gray(' (gzipped)') : ''));
+function log(title, what, sizediff) {
+	if (typeof sizediff === 'string') {
+		gutil.log(title + ' ' + (what ? what + ' ' : '') + chalk.magenta(sizediff));
+	} else {
+		title = title ? ('\'' + chalk.cyan(title) + '\' ') : '';
+		var stats = [prettyBytes(sizediff.startSize), ' / ',
+			prettyBytes(sizediff.endSize), ' / ',
+			prettyBytes(sizediff.diff), ' / ',
+			Math.round(sizediff.diffPercent * 100) + '% / ',
+			sizediff.compressionRatio.toFixed(2)].join('');
+
+		gutil.log(title + ' ' + (what ? what + ' ' : '') + chalk.magenta(stats));
+	}
 }
 
-module.exports = function (options) {
-	options = options || {};
+function sizediff() {
+	return through.obj(function (file, enc, cb) {
+		if (file.isNull()) {
+			cb(null, file);
+			return;
+		}
 
-	var totalSize = 0;
-	var fileCount = 0;
+		if (file.isStream()) {
+			cb(new gutil.PluginError('gulp-sizediff', 'Streaming not supported'));
+			return;
+		}
+		file.sizediff = {
+			startSize: file.contents && file.contents.length || file.stats && file.stats.size || 0
+		};
+		cb(null, file)
+	}, function(cb) {
+		cb()
+	});
+}
+
+sizediff.start = sizediff;
+
+sizediff.stop = function (options) {
+	if (typeof options === 'undefined') {
+		options = {};
+	}
+	var totalSize = {
+		start: 0,
+		end: 0
+	},
+		fileCount = 0;
 
 	return through.obj(function (file, enc, cb) {
 		if (file.isNull()) {
@@ -24,36 +58,47 @@ module.exports = function (options) {
 		}
 
 		if (file.isStream()) {
-			cb(new gutil.PluginError('gulp-size', 'Streaming not supported'));
+			cb(new gutil.PluginError('gulp-sizediff', 'Streaming not supported'));
 			return;
 		}
 
-		var finish = function (err, size) {
-			totalSize += size;
+		file.sizediff.endSize = file.contents && file.contents.length || file.stats && file.stats.size || 0;
+
+		var finish = function (err, sizediff) {
+			totalSize.start += sizediff.startSize;
+			totalSize.end += sizediff.endSize;
 
 			if (options.showFiles === true && size > 0) {
-				log(options.title, chalk.blue(file.relative), size, options.gzip);
+				sizediff.diff = sizediff.startSize - sizediff.endSize;
+				sizediff.diffPercent = sizediff.endSize / sizediff.startSize;
+				sizediff.compressionRatio = sizediff.diff / sizediff.startSize;
+
+				log(options.title, chalk.blue(file.relative), typeof options.formatFn === 'function' ? options.formatFn(sizediff) : sizediff);
 			}
 
 			fileCount++;
 			cb(null, file);
 		};
 
-		if (options.gzip) {
-			gzipSize(file.contents, finish);
-		} else {
-			finish(null, file.contents.length);
-		}
+		finish(null, file.sizediff);
 	}, function (cb) {
-		this.size = totalSize;
-		this.prettySize = prettyBytes(totalSize);
+		var sizediff = {
+			startSize: totalSize.start,
+			endSize: totalSize.end,
+			diff: totalSize.start - totalSize.end,
+			diffPercent: totalSize.end / totalSize.start,
+			compressionRatio: (totalSize.start - totalSize.end) / totalSize.start
+		};
 
 		if (fileCount === 1 && options.showFiles === true && totalSize > 0) {
 			cb();
 			return;
 		}
 
-		log(options.title, chalk.green('all files'), totalSize, options.gzip);
+		log(options.title, '', typeof options.formatFn === 'function' ? options.formatFn(sizediff) : sizediff);
 		cb();
 	});
+
 };
+
+module.exports = sizediff;

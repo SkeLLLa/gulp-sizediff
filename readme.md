@@ -1,16 +1,14 @@
-# gulp-size [![Build Status](https://travis-ci.org/sindresorhus/gulp-size.svg?branch=master)](https://travis-ci.org/sindresorhus/gulp-size)
+# gulp-sizediff
 
-> Display the size of your project
+> Display the total file size difference between before and after runnning your gulp tasks
 
-<img src="screenshot.png" width="341">
-
-Logs out the total size of files in the stream and optionally the individual file-sizes.
+Logs out the total size diff of files in the stream and optionally the individual file-size diffs.
 
 
 ## Install
 
 ```
-$ npm install --save-dev gulp-size
+$ npm install --save-dev gulp-sizediff
 ```
 
 
@@ -18,35 +16,34 @@ $ npm install --save-dev gulp-size
 
 ```js
 var gulp = require('gulp');
-var size = require('gulp-size');
+var bytediff = require('gulp-sizediff');
+var csso = require('gulp-csso');
 
-gulp.task('default', function () {
-	return gulp.src('fixture.js')
-		.pipe(size())
-		.pipe(gulp.dest('dist'));
+gulp.task('default', function() {
+    gulp.src('main.css')
+        .pipe(sizediff.start())
+        .pipe(csso())
+        .pipe(sizediff.stop())
+        .pipe(gulp.dest('./out'));
 });
 ```
+ 
 
+### sizediff.start() or sizediff()
 
-## API
+Creates a new property on the file object that saves its current size.
 
-### size(options)
+### sizediff.stop(options)
+
+Counts and outputs the difference between saved size and the current filesize.
 
 #### options
-
 ##### showFiles
 
 Type: `boolean`  
 Default: `false`
 
-Displays the size of every file instead of just the total size.
-
-##### gzip
-
-Type: `boolean`  
-Default: `false`
-
-Displays the gzipped size instead.
+Displays the size diff of every file instead of just the total size diff.
 
 ##### title
 
@@ -55,42 +52,28 @@ Default: ''
 
 Give it a title so it's possible to distinguish the output of multiple instances logging at once.
 
-### size.size
+##### formatFn
+Type: `function`  
+Default: ''
 
-Type: `number`  
-Example: `12423000`
-
-The total size of all files in bytes.
-
-### size.prettySize
-
-Type: `string`  
-Example: `'14 kB'`
-
-Prettified version of `.size`.
-
-Useful for eg. reporting the total project size with [`gulp-notify`](https://github.com/mikaelbr/gulp-notify):
+Customise the output of this by using the format function. An example:
 
 ```js
-var gulp = require('gulp');
-var size = require('gulp-size');
-var notify = require('gulp-notify');
-
-gulp.task('default', function () {
-	var s = size();
-	return gulp.src('fixture.js')
-		.pipe(s)
-		.pipe(gulp.dest('dist'))
-		.pipe(notify({
-			onLast: true,
-			message: function () {
-				return 'Total size ' + s.prettySize;
-			}
-		}));
-});
+	var sizeDiffFormat = function (data) {
+		return ': bytes saved: ' + data.diff + ' (' + Math.round(data.diffPercent * 100)  + '%); compression ratio: ' + data.compressionRatio.toFixed(2);
+	};
+    // ...
+    .pipe($.sizediff.stop({title:'html', formatFn: sizeDiffFormat}))
+    .pipe(gulp.dest('./out'));
 ```
+The function gets passed an object with the following properties:
 
+* startSize
+* endSize
+* diff
+* diffPercent
+* compressionRatio
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Alexander Kureniov](https://bitbucket.org/SkeLLLa/)
