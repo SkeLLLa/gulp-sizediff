@@ -70,9 +70,9 @@ The function gets passed an object with the following properties:
 
 * startSize
 * endSize
-* diff
-* diffPercent
-* compressionRatio
+* diff (startSize - endSize)
+* diffPercent (endSize / startSize)
+* compressionRatio (diff / startSize)
 
 ## License
 
