@@ -1,4 +1,6 @@
 # gulp-sizediff
+[![npm version](https://badge.fury.io/js/gulp-sizediff.svg)](http://badge.fury.io/js/gulp-sizediff)
+[![Dependency Status](https://david-dm.org/SkeLLLa/gulp-sizediff.svg)](https://david-dm.org/SkeLLLa/gulp-sizediff)
 
 > Display the total file size difference between before and after runnning your gulp tasks
 
