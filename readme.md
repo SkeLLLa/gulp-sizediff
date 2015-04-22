@@ -4,9 +4,6 @@
 
 > Display the total file size difference between before and after runnning your gulp tasks
 
-Logs out the total size diff of files in the stream and optionally the individual file-size diffs.
-
-
 ## Install
 
 ```
