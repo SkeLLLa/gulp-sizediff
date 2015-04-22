@@ -76,3 +76,9 @@ The function gets passed an object with the following properties:
 ## License
 
 MIT © [Alexander Kureniov](https://bitbucket.org/SkeLLLa/)
+
+## Thanks:
+[Sindre Sorhus](https://github.com/sindresorhus/gulp-size/) for gulp-size plugin
+[Ben Briggs](https://github.com/ben-eb/gulp-bytediff/) for gulp-bytediff plugin
+
+The ideas from this two good plugins were taken and merged in this one. Thanks.
