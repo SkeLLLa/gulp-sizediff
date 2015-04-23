@@ -68,7 +68,7 @@ sizediff.stop = function (options) {
 			totalSize.start += sizediff.startSize;
 			totalSize.end += sizediff.endSize;
 
-			if (options.showFiles === true && size > 0) {
+			if (options.showFiles === true && sizediff.endSize > 0) {
 				sizediff.diff = sizediff.startSize - sizediff.endSize;
 				sizediff.diffPercent = sizediff.endSize / sizediff.startSize;
 				sizediff.compressionRatio = sizediff.diff / sizediff.startSize;
