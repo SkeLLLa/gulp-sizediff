@@ -1,6 +1,6 @@
 {
   "name": "gulp-sizediff",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Compare total file sizes inside gulp build process.",
   "license": "MIT",
   "repository": {
