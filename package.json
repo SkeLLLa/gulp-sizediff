@@ -5,13 +5,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:SkeLLLa/gulp-sizediff.git"
+    "url": "git+ssh://git@github.com/SkeLLLa/gulp-sizediff.git"
   },
-  "author": {
-    "name": "Alexander Kureniov",
-    "email": "s@zxc.pp.ua",
-    "url": "https://bitbucket.org/SkeLLLa/"
-  },
+  "author": "Alexander Kureniov <s@zxc.pp.ua> (https://bitbucket.org/SkeLLLa/)",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -38,5 +34,13 @@
   },
   "devDependencies": {
     "jscs": "^1.12.0"
+  },
+  "bugs": {
+    "url": "https://github.com/SkeLLLa/gulp-sizediff/issues"
+  },
+  "homepage": "https://github.com/SkeLLLa/gulp-sizediff#readme",
+  "main": "index.js",
+  "scripts": {
+    "test": "\"\""
   }
 }
