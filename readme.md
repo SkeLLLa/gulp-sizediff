@@ -2,7 +2,9 @@
 [![npm version](https://badge.fury.io/js/gulp-sizediff.svg)](http://badge.fury.io/js/gulp-sizediff)
 [![Dependency Status](https://david-dm.org/SkeLLLa/gulp-sizediff.svg)](https://david-dm.org/SkeLLLa/gulp-sizediff)
 
-> Display the total file size difference between before and after runnning your gulp tasks
+Display the total file size difference between before and after runnning your gulp tasks
+
+> It's not the plugin with absolutely same functionality as gulp-size. It's build on it's source, but has different purpose.
 
 ## Install
 
